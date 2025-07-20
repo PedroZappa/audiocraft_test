@@ -69,8 +69,9 @@ add-if-exists = $(if $(wildcard $(1)/.),$(1))
 
 EXCLUDE_DIRS = $(VENV) \
                $(call add-if-exists,__*) \
+               $(call add-if-exists,build) \
                $(call add-if-exists,.*_cache) \
-               $(call add-if-exists,*-info) \
+               $(call add-if-exists,*/*-info) \
 
 black: ## Run black formatter
 	black . --exclude=$(EXCLUDE_DIRS)
@@ -188,7 +189,6 @@ clean: ## Remove temporary files
 	@echo "*** $(YEL)Removing $(MAG)$(NAME)$(D) and $(YEL)deps$(D)"
 	@for target in $(CLEAN_TARGETS); do \
 		if [ "$$target" = ".venv" ]; then \
-			echo "*** $(YEL)Skipping $(CYA).venv$(D)"; \
 			continue; \
 		fi; \
 		if [ -e "$$target" ] || [ -d "$$target" ]; then \
@@ -214,7 +214,7 @@ help: 	## Display this help page
 ## Tweaked from source:
 ### https://www.padok.fr/en/blog/beautiful-makefile-awk
 
-.PHONY: test mypy black posting clean help docs
+.PHONY: test mypy black posting clean help docs build
 
 #==============================================================================#
 #                                  UTILS                                       #

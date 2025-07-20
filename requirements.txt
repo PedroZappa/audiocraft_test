@@ -1,0 +1,6 @@
+mypy
+pytest
+black
+ruff
+debugpy
+

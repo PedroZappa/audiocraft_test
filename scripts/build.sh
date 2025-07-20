@@ -91,7 +91,6 @@ pip install --upgrade pip
 if [ -f "pyproject.toml" ]; then
     echo "Installing from pyproject.toml..."
       pip install -e .
-elif [ -f "requirements.txt" ]; then
     echo "Installing from requirements.txt..."
     pip install -r requirements.txt
 elif [ -f "setup.py" ]; then
