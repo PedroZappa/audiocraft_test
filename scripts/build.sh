@@ -81,7 +81,10 @@ if [ ! -d .venv ]; then
     echo ".venv created"
 fi
 
+echo "Activating virtual environment..."
 source .venv/bin/activate
+
+echo "Upgrading pip..."
 pip install --upgrade pip
 
 # Priority order: pyproject.toml > requirements.txt > setup.py
