@@ -1,0 +1,47 @@
+# pyproject.toml.template
+[project]
+name = "audiocraft_test"
+version = "0.1.0"
+description = "..."
+authors = [
+    { name = "Zedro", email = "45104292+PedroZappa@users.noreply.github.com" },
+]
+
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+
+# Build System
+[build-system]
+requires = [
+  "setuptools>=73.0.0", 
+  "wheel"
+]
+
+# Dependencies
+dependencies = [
+    "python-dotenv>=1.0.1",
+    "rich",
+]
+[project.optional-dependencies]
+dev = [
+]
+[dependency-groups]
+dev = [
+    "mypy",
+    "pytest",
+    "black",
+    "ruff",
+    "debugpy",
+]
+
+# Tools
+[tool.setuptools]
+
+[tool.setuptools.package-data]
+"*" = ["py.typed"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'

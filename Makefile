@@ -12,7 +12,7 @@ VENV		= .venv
 #                                     NAMES                                    #
 #==============================================================================#
 
-PROJECT_NAME		= project-name
+PROJECT_NAME		= audiocraft_test
 PROJECT_DESCRIPTION	= ...
 PROJECT_VERSION		= 0.1.0
 AUTHOR_NAME			= Zedro
