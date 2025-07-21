@@ -1,54 +1,28 @@
-# pyproject.toml
 [project]
 name = "audiocraft_test"
 version = "0.1.0"
-description = "..."
+description = ""
 authors = [
-    { name = "Zedro", email = "45104292+PedroZappa@users.noreply.github.com" },
+  { name = "Zedro", email = "45104292+PedroZappa@users.noreply.github.com" }
 ]
-
 readme = "README.md"
-license = { text = "MIT" }
 requires-python = ">=3.9"
+dependencies = []
 
-# Build System
+[tool.poetry]
+# ← packages belongs here, not under [project]
+packages = [
+  { include = "*", from = "src" }
+]
+# (optional) disable if you only need dependency management
+# package-mode = true
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+
 [build-system]
-requires = [
-  "setuptools>=73.0.0", 
-  "wheel"
-]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
 
-# Dependencies
-dependencies = [
-    "python-dotenv>=1.0.1",
-    "rich",
-]
-[project.optional-dependencies]
-dev = [
-    "mypy",
-    "pytest",
-    "black",
-    "ruff",
-    "debugpy",
-]
-[dependency-groups]
-dev = [
-    "mypy",
-    "pytest",
-    "black",
-    "ruff",
-    "debugpy",
-]
-
-# Tools
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-data]
-"*" = ["py.typed"]
-
-[tool.black]
-line-length = 88
-target-version = ['py39']
-include = '\.pyi?$'
+[tool.pytest.ini_options]
+pythonpath = ["src"]
