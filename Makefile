@@ -27,6 +27,15 @@ MAIN_TEST = test_$(NAME).py
 TEST_FILE ?= $(MAIN_TEST)
 EXEC			= ./scripts/run.sh && $(PYTHON) $(MAIN)
 
+# Define a function to add directory if it exists
+add-if-exists = $(if $(wildcard $(1)/.),$(1))
+
+EXCLUDE_DIRS = $(VENV) \
+               $(call add-if-exists,__*) \
+               $(call add-if-exists,build) \
+               $(call add-if-exists,.*_cache) \
+               $(call add-if-exists,*/*-info) \
+
 #==============================================================================#
 #                                COMMANDS                                      #
 #==============================================================================#
@@ -63,15 +72,6 @@ run:			## Run project
 	@echo "* $(MAG)$(NAME) $(YEL)finished$(D):"
 
 ##@ Utility Rules 
-
-# Define a function to add directory if it exists
-add-if-exists = $(if $(wildcard $(1)/.),$(1))
-
-EXCLUDE_DIRS = $(VENV) \
-               $(call add-if-exists,__*) \
-               $(call add-if-exists,build) \
-               $(call add-if-exists,.*_cache) \
-               $(call add-if-exists,*/*-info) \
 
 black: ## Run black formatter
 	black . --exclude=$(EXCLUDE_DIRS)

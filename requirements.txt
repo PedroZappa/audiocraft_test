@@ -4,3 +4,5 @@ black
 ruff
 debugpy
 
+torch==2.1.0
+
