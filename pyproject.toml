@@ -19,6 +19,10 @@ packages = [
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
+pytest = "^8.4.1"
+mypy = "^1.17.0"
+ruff = "^0.12.4"
+debugpy = "^1.8.15"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

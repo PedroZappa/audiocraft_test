@@ -18,8 +18,8 @@ PROJECT_VERSION		= 0.1.0
 AUTHOR_NAME			= Zedro
 AUTHOR_EMAIL		= 45104292+PedroZappa@users.noreply.github.com
 
-SRC		= .
-NAME	= $(PROJECT_NAME)
+SRC		= src
+NAME	= main
 MAIN	= $(SRC)/$(NAME).py
 ARGS	= 
 
@@ -33,6 +33,7 @@ add-if-exists = $(if $(wildcard $(1)/.),$(1))
 EXCLUDE_DIRS = $(VENV) \
                $(call add-if-exists,__*) \
                $(call add-if-exists,build) \
+               $(call add-if-exists,dist) \
                $(call add-if-exists,.*_cache) \
                $(call add-if-exists,*/*-info) \
 
@@ -50,54 +51,38 @@ MKDIR_P	= mkdir -p
 
 ##@ Project Scaffolding 󰛵
 
-all:			## Build and run project
-	$(MAKE) build
+all: build			## Build and run project
 
-build:		## Build project
-	@echo "* $(MAG)$(NAME) $(YEL)building$(D): $(_SUCCESS)"
-	@PROJECT_NAME="$(PROJECT_NAME)" \
-	PROJECT_DESCRIPTION="$(PROJECT_DESCRIPTION)" \
-	PROJECT_VERSION="$(PROJECT_VERSION)" \
-	AUTHOR_NAME="$(AUTHOR_NAME)" \
-	AUTHOR_EMAIL="$(AUTHOR_EMAIL)" \
-	source ./scripts/build.sh
-	@echo "* $(MAG)$(NAME) $(YEL)finished building$(D):"
+env:			## Create virtual environment
+	@echo "$(B)Project: $(PROJECT_NAME) v$(PROJECT_VERSION)$(D)"
+	@echo "Setting up Poetry virtual environment..."
+	@if ! command -v poetry >/dev/null 2>&1; then \
+	  echo "$(RED)Error: Poetry is not installed$(D)"; \
+	  exit 1; \
+	fi
+	poetry env use "$(PYTHON)" || true
+	poetry install --no-root --only dev >/dev/null
 
-run:			## Run project
-	$(MAKE) build
-	@echo "* $(MAG)$(NAME) $(YEL)executing$(D): $(_SUCCESS)"
-	@echo "$(GRN)$(_SEP)$(D)"
-	@source .venv/bin/activate && $(PYTHON) $(MAIN)
-	@echo "$(GRN)$(_SEP)$(D)"
-	@echo "* $(MAG)$(NAME) $(YEL)finished$(D):"
+deps: env
+	@echo "$(B)Installing all dependencies (including dev)$(D)"
+	poetry install
+
+build: deps ## Build project
+	@echo "$(B)Building source and wheel distributions...$(D)"
+	poetry build
+	@echo "$(GRN)✅ Build complete: dist/$(D)"
+
+run:
+	@echo "$(B)Running $(MAG)$(PROJECT_NAME)$(BWHI) application$(D)"
+	poetry run python $(MAIN)
 
 ##@ Utility Rules 
 
-black: ## Run black formatter
-	black . --exclude=$(EXCLUDE_DIRS)
-
-# Define a variable for Python and notebook files.
-PYTHON_FILES=$(SRC)/
-MYPY_CACHE=.mypy_cache
-lint format: PYTHON_FILES=.
-lint_diff format_diff: PYTHON_FILES=$(shell git diff --name-only --diff-filter=d main | grep -E '\.py$$|\.ipynb$$')
-lint_package: PYTHON_FILES=$(SRC)
-lint_tests: PYTHON_FILES=tests
-lint_tests: MYPY_CACHE=.mypy_cache_test
-
-lint lint_diff lint_package lint_tests: 
-	python -m ruff check .
-	[ "$(PYTHON_FILES)" = "" ] || python -m ruff format $(PYTHON_FILES) --diff
-	[ "$(PYTHON_FILES)" = "" ] || python -m ruff check --select I $(PYTHON_FILES)
-	[ "$(PYTHON_FILES)" = "" ] || python -m mypy --strict $(PYTHON_FILES)
-	[ "$(PYTHON_FILES)" = "" ] || mkdir -p $(MYPY_CACHE) && python -m mypy --strict $(PYTHON_FILES) --cache-dir $(MYPY_CACHE)
-
-
-spell_check: ## Run codespell check
-	codespell --toml pyproject.toml
-
-spell_fix:	## Run codespell fix
-	codespell --toml pyproject.toml -w
+lint:			## Lint project
+	@echo "$(B)Linting & type checking$(D)"
+	poetry run ruff .
+	poetry run black . --check
+	poetry run mypy $(SRC)
 
 ##@ Documentation Rules 
 
@@ -120,7 +105,12 @@ docs: 		## Open docs index in browser
 
 ##@ Test/Debug Rules 
 
-test:## Run all tests
+test:			# Test project
+	@echo "$(B)Running test suite$(D)"
+	poetry run pytest $(MAIN_TEST)
+
+
+test_all:## Run all tests
 	@echo "* $(MAG)$(NAME) $(YEL)starting test suite$(D):"
 	@echo ""
 	@$(MAKE) doctest; DOCTEST_EXIT=$$?; \
